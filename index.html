@@ -1,6 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lina | Construtor de Mensagens Inteligente</title>
+  
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/5968/5968534.png">
+  <meta property="og:title" content="Lina | IA Creator">
+  <meta property="og:description" content="Construtor inteligente de mensagens via histórico e IA.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1577563906417-45a11b3f5f23?q=80&w=500">
+
   <style>
     :root {
       --primary: #25D366;
@@ -187,24 +196,24 @@
     <div class="control-group">
       <label>Assunto:</label>
       <select id="select-assunto" onchange="atualizarCard('assunto')"></select>
-      <div id="card-assunto" class="card-item" draggable="true" ondragstart="drag(event)" data-type="assunto">Carregando...</div>
+      <div id="card-assunto" class="card-item" draggable="true" ondragstart="drag(event)" data-type="assunto">Aguardando...</div>
     </div>
 
     <div class="control-group">
       <label>Tom de Voz:</label>
       <select id="select-tom" onchange="atualizarCard('tom')"></select>
-      <div id="card-tom" class="card-item" draggable="true" ondragstart="drag(event)" data-type="tom">Carregando...</div>
+      <div id="card-tom" class="card-item" draggable="true" ondragstart="drag(event)" data-type="tom">Aguardando...</div>
     </div>
 
     <div class="control-group">
       <label>Link:</label>
       <select id="select-link" onchange="atualizarCard('link')"></select>
-      <div id="card-link" class="card-item" draggable="true" ondragstart="drag(event)" data-type="link">Carregando...</div>
+      <div id="card-link" class="card-item" draggable="true" ondragstart="drag(event)" data-type="link">Aguardando...</div>
     </div>
   </div>
 
   <div class="brain-zone" id="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
-    <h2>🧠 Cérebro de Lina</h2>
+    <h2>🧠 Cérebro de IA</h2>
     <p>Monte sua estrutura aqui</p>
     <div id="selected-tags"></div>
     <button class="btn-gerar" onclick="gerarMensagens()">✨ Gerar 3 Variações</button>
@@ -239,33 +248,52 @@
 </div>
 
 <script>
-  let config = { assunto: '', tom: '', linkNome: '', linkUrl: '', especialista: 'Especialista Lina', saudacao: 'Olá!' };
+  // ATENÇÃO: Verifique se este URL de Script é o mais recente
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywJY5j8tKYpe_KQshseuDj7n0HD7p1iNxXfnozeYSbocxivBjKuvtKirQRfkCkx2E/exec";
+
+  let config = { action: 'generate', assunto: '', tom: '', linkNome: '', linkUrl: '', especialista: '', saudacao: 'Olá!', "Oi", "Tudo bem?" };
 
   // --- CARREGAMENTO INICIAL ---
   window.onload = function() {
-    google.script.run.withSuccessHandler(function(data) {
-      preencherSelect('select-assunto', data.assuntos);
-      preencherSelect('select-tom', data.tons); // Corrigido ID de select-tons para select-tom
+    console.log("Iniciando carregamento de configurações...");
+    
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: 'getConfig' })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Dados recebidos:", data);
+      
+      if (data.assuntos) preencherSelect('select-assunto', data.assuntos);
+      if (data.tons) preencherSelect('select-tom', data.tons);
       
       const selectLink = document.getElementById('select-link');
-      data.links.forEach(l => {
-        let opt = document.createElement('option');
-        opt.value = l.url;
-        opt.text = l.nome;
-        selectLink.appendChild(opt);
-      });
+      if (data.links) {
+        data.links.forEach(l => {
+          let opt = document.createElement('option');
+          opt.value = l.url;
+          opt.text = l.nome;
+          selectLink.appendChild(opt);
+        });
+      }
       
-      // Atualiza os cards visíveis logo após preencher
+      // Delay para renderização dos selects
       setTimeout(() => {
         atualizarCard('assunto');
         atualizarCard('tom');
         atualizarCard('link');
-      }, 300);
-    }).getConfiguracoes();
+      }, 500);
+    })
+    .catch(err => {
+      console.error("Erro fatal ao carregar configs:", err);
+      alert("Erro ao conectar com a planilha. Verifique se o Script está implantado como 'Qualquer pessoa'.");
+    });
   };
 
   function preencherSelect(id, lista) {
     const sel = document.getElementById(id);
+    sel.innerHTML = ""; // Limpa o "Carregando"
     lista.forEach(item => {
       let opt = document.createElement('option');
       opt.value = item;
@@ -317,12 +345,12 @@
   }
 
   // --- GERAÇÃO E CÓPIA ---
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeq5E8oUDZn99AAh-j73SBVs_jgSwzEFkhu-BlZkZeg5lgQFQ-lI6_KJis2MrLK-jK/exec";
-
   function gerarMensagens() {
     const btn = document.querySelector('.btn-gerar');
     btn.innerText = "⏳ Consultando Cérebro...";
     btn.disabled = true;
+
+    config.action = 'generate'; // Garante a ação de geração
 
     fetch(SCRIPT_URL, {
       method: "POST",
@@ -338,7 +366,7 @@
     })
     .catch(err => {
       console.error(err);
-      btn.innerText = "✨ Gerar 3 Variações";
+      btn.innerText = "Erro ao Gerar";
       btn.disabled = false;
     });
   }
