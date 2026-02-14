@@ -1,390 +1,383 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lina | Construtor de Mensagens Inteligente</title>
-  
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/5968/5968534.png">
-  <meta property="og:title" content="Lina | IA Creator">
-  <meta property="og:description" content="Construtor inteligente de mensagens via histórico e IA.">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1577563906417-45a11b3f5f23?q=80&w=500">
-
-  <style>
-    :root {
-      --primary: #25D366;
-      --primary-dark: #128C7E;
-      --bg: #f8f9fa;
-      --text: #2d3748;
-      --border: #e2e8f0;
-      --card-bg: #ffffff;
-    }
-    body { 
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-      background: var(--bg); 
-      color: var(--text);
-      margin: 0; 
-      padding: 20px; 
-    }
-    .app-container { 
-      display: grid; 
-      grid-template-columns: 300px 1fr 350px; 
-      gap: 25px; 
-      max-width: 1500px; 
-      margin: auto; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lina | Construtor de Mensagens Inteligente</title>
     
-    /* Sidebar e Controles */
-    .sidebar { 
-      background: white; 
-      padding: 20px; 
-      border-radius: 16px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border: 1px solid var(--border);
-    }
-    h3 { color: var(--primary-dark); margin-top: 0; font-size: 1.1rem; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
-    
-    .control-group { margin-bottom: 20px; }
-    label { 
-      display: block; 
-      font-size: 0.85rem; 
-      font-weight: 600; 
-      margin-bottom: 8px; 
-      color: #718096;
-    }
-    
-    select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background-color: #fff;
-      font-size: 0.9rem;
-      color: var(--text);
-      transition: all 0.2s;
-      margin-bottom: 10px;
-      cursor: pointer;
-    }
-    select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
-    }
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/5968/5968534.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    /* Cards Arrastáveis */
-    .card-item {
-      background: var(--card-bg);
-      border: 2px solid var(--border);
-      padding: 12px;
-      border-radius: 10px;
-      cursor: grab;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--primary-dark);
-    }
-    .card-item:hover {
-      border-color: var(--primary);
-      background: #f0fff4;
-      transform: translateY(-2px);
-    }
-    .card-item:active { cursor: grabbing; }
-    .card-item::before {
-      content: '⠿';
-      margin-right: 12px;
-      color: #cbd5e0;
-      font-size: 1.2rem;
-    }
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --gold: #c5a059;
+            --gold-dark: #a88548;
+            --white: #ffffff;
+            --gray-dark: #1a1a1a;
+            --gray-light: #2d2d2d;
+            --border-color: rgba(197, 160, 89, 0.3);
+        }
 
-    /* Área do Cérebro */
-    .brain-zone {
-      background: white; 
-      border: 3px dashed #cbd5e0; 
-      border-radius: 24px;
-      padding: 40px; 
-      text-align: center; 
-      min-height: 450px;
-      display: flex; 
-      flex-direction: column; 
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
-    .brain-zone.dragover { 
-      background: #f0fff4; 
-      border-color: var(--primary); 
-      transform: scale(1.01);
-    }
-    #selected-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 25px 0; justify-content: center; }
-    .tag { 
-      background: #e6fffa; 
-      color: var(--primary-dark); 
-      padding: 6px 14px; 
-      border-radius: 12px; 
-      font-size: 0.8rem;
-      font-weight: 600;
-      border: 1px solid rgba(37, 211, 102, 0.2);
-    }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--black); 
+            color: var(--white);
+            margin: 0; 
+            padding: 10px;
+            min-height: 100vh;
+        }
 
-    .btn-gerar {
-      background: var(--primary); 
-      color: white; 
-      border: none; 
-      padding: 16px 40px;
-      border-radius: 12px; 
-      font-size: 1rem; 
-      cursor: pointer; 
-      font-weight: 700;
-      box-shadow: 0 10px 15px -3px rgba(37, 211, 102, 0.3);
-      transition: all 0.2s;
-    }
-    .btn-gerar:hover { background: var(--primary-dark); transform: translateY(-1px); }
-    .btn-gerar:disabled { background: #cbd5e0; cursor: not-allowed; box-shadow: none; }
+        .app-container { 
+            display: grid; 
+            grid-template-columns: 320px 1fr 350px; 
+            gap: 20px; 
+            max-width: 1600px; 
+            margin: auto;
+            padding: 20px;
+        }
 
-    /* Resultados e Botão Copiar */
-    .output-card {
-      background: #fff; 
-      padding: 18px; 
-      border-radius: 16px; 
-      margin-bottom: 20px;
-      border-left: 6px solid var(--primary); 
-      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    }
-    .output-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .output-header strong { font-size: 0.9rem; color: #4a5568; }
-    
-    .copy-btn {
-      background: #edf2f7;
-      border: 1px solid #cbd5e0;
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--primary-dark);
-      transition: all 0.2s;
-    }
-    .copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
-    .copy-btn.copied { background: var(--primary-dark); color: white; }
+        /* Sidebar */
+        .sidebar { 
+            background: var(--gray-dark); 
+            padding: 25px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
 
-    textarea { 
-      width: 100%; 
-      border: 1px solid #f7fafc; 
-      outline: none; 
-      resize: none; 
-      font-size: 0.95rem; 
-      color: #2d3748;
-      line-height: 1.5;
-      background: #fcfcfc;
-    }
-  </style>
+        h3 { 
+            color: var(--gold); 
+            margin-top: 0; 
+            font-size: 1.2rem; 
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        small { color: #888; display: block; margin-bottom: 20px; }
+        
+        .control-group { margin-bottom: 25px; }
+        label { 
+            display: block; 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            background-color: var(--black);
+            font-size: 0.9rem;
+            color: var(--white);
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: border 0.3s;
+        }
+        select:focus { outline: none; border-color: var(--gold); }
+
+        /* Cards Arrastáveis e Clicáveis */
+        .card-item {
+            background: var(--gray-light);
+            border: 1px solid transparent;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--white);
+        }
+        .card-item:hover {
+            border-color: var(--gold);
+            background: #252525;
+            transform: scale(1.02);
+        }
+        .card-item::before {
+            content: '\f0c9';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 12px;
+            color: var(--gold);
+        }
+
+        /* Área do Cérebro */
+        .brain-zone {
+            background: var(--gray-dark); 
+            border: 2px dashed var(--border-color); 
+            border-radius: 30px;
+            padding: 40px; 
+            text-align: center; 
+            min-height: 400px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .brain-zone.dragover { 
+            background: rgba(197, 160, 89, 0.1); 
+            border-color: var(--gold); 
+        }
+        
+        #selected-tags { display: flex; flex-wrap: wrap; gap: 10px; margin: 25px 0; justify-content: center; }
+        .tag { 
+            background: var(--gold); 
+            color: var(--black); 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .btn-gerar {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); 
+            color: var(--black); 
+            border: none; 
+            padding: 18px 45px;
+            border-radius: 50px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            transition: all 0.3s;
+        }
+        .btn-gerar:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(197, 160, 89, 0.2); }
+        .btn-gerar:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        /* Resultados */
+        .output-card {
+            background: var(--gray-dark); 
+            padding: 20px; 
+            border-radius: 20px; 
+            margin-bottom: 20px;
+            border: 1px solid var(--gray-light);
+            border-left: 4px solid var(--gold); 
+        }
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .output-header strong { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            padding: 6px 15px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gold);
+            transition: all 0.3s;
+        }
+        .copy-btn:hover { background: var(--gold); color: var(--black); }
+
+        textarea { 
+            width: 100%; 
+            border: none; 
+            outline: none; 
+            resize: none; 
+            font-size: 0.95rem; 
+            color: #ccc;
+            line-height: 1.6;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1100px) {
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar { order: 1; }
+            .brain-zone { order: 2; min-height: 300px; }
+            #results { order: 3; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
 </head>
 <body>
 
 <div class="app-container">
-  <div class="sidebar">
-    <h3>📌 Variáveis</h3>
-    <small>Selecione e arraste para o cérebro</small>
-    
-    <div class="control-group">
-      <label>Assunto:</label>
-      <select id="select-assunto" onchange="atualizarCard('assunto')"></select>
-      <div id="card-assunto" class="card-item" draggable="true" ondragstart="drag(event)" data-type="assunto">Aguardando...</div>
+    <div class="sidebar">
+        <h3>📌 Variáveis</h3>
+        <small>Toque ou arraste para o cérebro</small>
+        
+        <div class="control-group">
+            <label>Assunto:</label>
+            <select id="select-assunto" onchange="atualizarCard('assunto')"></select>
+            <div id="card-assunto" class="card-item" draggable="true" ondragstart="drag(event)" onclick="handleCardClick(this)" data-type="assunto">Aguardando...</div>
+        </div>
+
+        <div class="control-group">
+            <label>Tom de Voz:</label>
+            <select id="select-tom" onchange="atualizarCard('tom')"></select>
+            <div id="card-tom" class="card-item" draggable="true" ondragstart="drag(event)" onclick="handleCardClick(this)" data-type="tom">Aguardando...</div>
+        </div>
+
+        <div class="control-group">
+            <label>Link:</label>
+            <select id="select-link" onchange="atualizarCard('link')"></select>
+            <div id="card-link" class="card-item" draggable="true" ondragstart="drag(event)" onclick="handleCardClick(this)" data-type="link">Aguardando...</div>
+        </div>
     </div>
 
-    <div class="control-group">
-      <label>Tom de Voz:</label>
-      <select id="select-tom" onchange="atualizarCard('tom')"></select>
-      <div id="card-tom" class="card-item" draggable="true" ondragstart="drag(event)" data-type="tom">Aguardando...</div>
+    <div class="brain-zone" id="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+        <h2 style="color: var(--gold); font-weight: 300;">🧠 Cérebro de <span style="font-weight: 700;">IA</span></h2>
+        <p style="color: #666; font-size: 0.9rem;">Selecione os parâmetros para compor sua mensagem</p>
+        <div id="selected-tags"></div>
+        <button class="btn-gerar" onclick="gerarMensagens()">✨ Gerar Variações</button>
+        <div style="margin-top:20px;"><a href="#" onclick="location.reload()" style="font-size:0.7rem; color:#444; text-decoration: none;">Limpar Painel</a></div>
     </div>
 
-    <div class="control-group">
-      <label>Link:</label>
-      <select id="select-link" onchange="atualizarCard('link')"></select>
-      <div id="card-link" class="card-item" draggable="true" ondragstart="drag(event)" data-type="link">Aguardando...</div>
-    </div>
-  </div>
+    <div id="results">
+        <div class="output-card">
+            <div class="output-header">
+                <strong>Opção 1</strong>
+                <button class="copy-btn" onclick="copyText('res1', this)">📋 Copiar</button>
+            </div>
+            <textarea id="res1" rows="6" placeholder="As sugestões aparecerão aqui..."></textarea>
+        </div>
+        
+        <div class="output-card">
+            <div class="output-header">
+                <strong>Opção 2</strong>
+                <button class="copy-btn" onclick="copyText('res2', this)">📋 Copiar</button>
+            </div>
+            <textarea id="res2" rows="6" placeholder="As sugestões aparecerão aqui..."></textarea>
+        </div>
 
-  <div class="brain-zone" id="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
-    <h2>🧠 Cérebro de IA</h2>
-    <p>Monte sua estrutura aqui</p>
-    <div id="selected-tags"></div>
-    <button class="btn-gerar" onclick="gerarMensagens()">✨ Gerar 3 Variações</button>
-    <div style="margin-top:15px;"><a href="#" onclick="location.reload()" style="font-size:0.7rem; color:#ccc;">Limpar Cérebro</a></div>
-  </div>
-
-  <div id="results">
-    <div class="output-card">
-      <div class="output-header">
-        <strong>Opção 1</strong>
-        <button class="copy-btn" onclick="copyText('res1')">📋 Copiar</button>
-      </div>
-      <textarea id="res1" rows="6" placeholder="Aguardando geração..."></textarea>
+        <div class="output-card">
+            <div class="output-header">
+                <strong>Opção 3</strong>
+                <button class="copy-btn" onclick="copyText('res3', this)">📋 Copiar</button>
+            </div>
+            <textarea id="res3" rows="6" placeholder="As sugestões aparecerão aqui..."></textarea>
+        </div>
     </div>
-    
-    <div class="output-card">
-      <div class="output-header">
-        <strong>Opção 2</strong>
-        <button class="copy-btn" onclick="copyText('res2')">📋 Copiar</button>
-      </div>
-      <textarea id="res2" rows="6" placeholder="Aguardando geração..."></textarea>
-    </div>
-
-    <div class="output-card">
-      <div class="output-header">
-        <strong>Opção 3</strong>
-        <button class="copy-btn" onclick="copyText('res3')">📋 Copiar</button>
-      </div>
-      <textarea id="res3" rows="6" placeholder="Aguardando geração..."></textarea>
-    </div>
-  </div>
 </div>
 
 <script>
-  // ATENÇÃO: Verifique se este URL de Script é o mais recente
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywJY5j8tKYpe_KQshseuDj7n0HD7p1iNxXfnozeYSbocxivBjKuvtKirQRfkCkx2E/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywJY5j8tKYpe_KQshseuDj7n0HD7p1iNxXfnozeYSbocxivBjKuvtKirQRfkCkx2E/exec";
+    let config = { action: 'generate', assunto: '', tom: '', linkNome: '', linkUrl: '', especialista: '', saudacao: 'Olá!' };
 
-  let config = { action: 'generate', assunto: '', tom: '', linkNome: '', linkUrl: '', especialista: '', saudacao: 'Olá!' };
-
-  // --- CARREGAMENTO INICIAL ---
-  window.onload = function() {
-    console.log("Iniciando carregamento de configurações...");
-    
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: 'getConfig' })
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Dados recebidos:", data);
-      
-      if (data.assuntos) preencherSelect('select-assunto', data.assuntos);
-      if (data.tons) preencherSelect('select-tom', data.tons);
-      
-      const selectLink = document.getElementById('select-link');
-      if (data.links) {
-        data.links.forEach(l => {
-          let opt = document.createElement('option');
-          opt.value = l.url;
-          opt.text = l.nome;
-          selectLink.appendChild(opt);
+    window.onload = function() {
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: 'getConfig' }) })
+        .then(res => res.json())
+        .then(data => {
+            if (data.assuntos) preencherSelect('select-assunto', data.assuntos);
+            if (data.tons) preencherSelect('select-tom', data.tons);
+            if (data.links) {
+                const selectLink = document.getElementById('select-link');
+                data.links.forEach(l => {
+                    let opt = document.createElement('option');
+                    opt.value = l.url; opt.text = l.nome;
+                    selectLink.appendChild(opt);
+                });
+            }
+            setTimeout(() => { atualizarCard('assunto'); atualizarCard('tom'); atualizarCard('link'); }, 500);
         });
-      }
-      
-      // Delay para renderização dos selects
-      setTimeout(() => {
-        atualizarCard('assunto');
-        atualizarCard('tom');
-        atualizarCard('link');
-      }, 500);
-    })
-    .catch(err => {
-      console.error("Erro fatal ao carregar configs:", err);
-      alert("Erro ao conectar com a planilha. Verifique se o Script está implantado como 'Qualquer pessoa'.");
-    });
-  };
+    };
 
-  function preencherSelect(id, lista) {
-    const sel = document.getElementById(id);
-    sel.innerHTML = ""; // Limpa o "Carregando"
-    lista.forEach(item => {
-      let opt = document.createElement('option');
-      opt.value = item;
-      opt.text = item;
-      sel.appendChild(opt);
-    });
-  }
-
-  function atualizarCard(tipo) {
-    const sel = document.getElementById('select-' + tipo);
-    const card = document.getElementById('card-' + tipo);
-    if (!sel || !card) return;
-    
-    const valText = sel.options[sel.selectedIndex]?.text || 'Selecione...';
-    const valUrl = sel.value;
-    
-    card.innerText = valText;
-    card.setAttribute('data-val', valText);
-    if(tipo === 'link') card.setAttribute('data-url', valUrl);
-  }
-
-  // --- LÓGICA DE DRAG & DROP ---
-  function allowDrop(ev) { ev.preventDefault(); document.getElementById('dropzone').classList.add('dragover'); }
-  function dragLeave(ev) { document.getElementById('dropzone').classList.remove('dragover'); }
-  
-  function drag(ev) {
-    ev.dataTransfer.setData("type", ev.target.getAttribute('data-type'));
-    ev.dataTransfer.setData("val", ev.target.getAttribute('data-val'));
-    ev.dataTransfer.setData("url", ev.target.getAttribute('data-url') || '');
-  }
-
-  function drop(ev) {
-    ev.preventDefault();
-    document.getElementById('dropzone').classList.remove('dragover');
-    const type = ev.dataTransfer.getData("type");
-    const val = ev.dataTransfer.getData("val");
-    const url = ev.dataTransfer.getData("url");
-
-    config[type] = val;
-    if(type === 'link') {
-      config.linkNome = val;
-      config.linkUrl = url;
+    function preencherSelect(id, lista) {
+        const sel = document.getElementById(id);
+        sel.innerHTML = "";
+        lista.forEach(item => {
+            let opt = document.createElement('option');
+            opt.value = item; opt.text = item;
+            sel.appendChild(opt);
+        });
     }
 
-    const tag = document.createElement("div");
-    tag.className = "tag";
-    tag.innerHTML = `${type.toUpperCase()}: ${val}`;
-    document.getElementById('selected-tags').appendChild(tag);
-  }
+    function atualizarCard(tipo) {
+        const sel = document.getElementById('select-' + tipo);
+        const card = document.getElementById('card-' + tipo);
+        const valText = sel.options[sel.selectedIndex]?.text || 'Selecione...';
+        card.innerText = valText;
+        card.setAttribute('data-val', valText);
+        if(tipo === 'link') card.setAttribute('data-url', sel.value);
+    }
 
-  // --- GERAÇÃO E CÓPIA ---
-  function gerarMensagens() {
-    const btn = document.querySelector('.btn-gerar');
-    btn.innerText = "⏳ Consultando Cérebro...";
-    btn.disabled = true;
+    /* --- LÓGICA HÍBRIDA (CLIQUE OU ARRASTE) --- */
+    function handleCardClick(element) {
+        const type = element.getAttribute('data-type');
+        const val = element.getAttribute('data-val');
+        const url = element.getAttribute('data-url') || '';
+        processSelection(type, val, url);
+    }
 
-    config.action = 'generate'; // Garante a ação de geração
+    function allowDrop(ev) { ev.preventDefault(); document.getElementById('dropzone').classList.add('dragover'); }
+    function dragLeave(ev) { document.getElementById('dropzone').classList.remove('dragover'); }
+    function drag(ev) {
+        ev.dataTransfer.setData("type", ev.target.getAttribute('data-type'));
+        ev.dataTransfer.setData("val", ev.target.getAttribute('data-val'));
+        ev.dataTransfer.setData("url", ev.target.getAttribute('data-url') || '');
+    }
 
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(config)
-    })
-    .then(res => res.json())
-    .then(res => {
-      document.getElementById('res1').value = res.v1 || '';
-      document.getElementById('res2').value = res.v2 || '';
-      document.getElementById('res3').value = res.v3 || '';
-      btn.innerText = "✨ Gerar 3 Variações";
-      btn.disabled = false;
-    })
-    .catch(err => {
-      console.error(err);
-      btn.innerText = "Erro ao Gerar";
-      btn.disabled = false;
-    });
-  }
+    function drop(ev) {
+        ev.preventDefault();
+        document.getElementById('dropzone').classList.remove('dragover');
+        processSelection(ev.dataTransfer.getData("type"), ev.dataTransfer.getData("val"), ev.dataTransfer.getData("url"));
+    }
 
-  function copyText(id) {
-    const area = document.getElementById(id);
-    area.select();
-    document.execCommand('copy');
-    
-    const btn = event.currentTarget;
-    const oldText = btn.innerText;
-    btn.innerText = "✅ Copiado!";
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.innerText = oldText;
-      btn.classList.remove('copied');
-    }, 2000);
-  }
+    function processSelection(type, val, url) {
+        config[type] = val;
+        if(type === 'link') { config.linkNome = val; config.linkUrl = url; }
+        
+        const container = document.getElementById('selected-tags');
+        // Evitar duplicados do mesmo tipo visualmente
+        const existing = container.querySelector(`[data-type="${type}"]`);
+        if(existing) existing.remove();
+
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        tag.setAttribute('data-type', type);
+        tag.innerHTML = `${type}: ${val}`;
+        container.appendChild(tag);
+    }
+
+    function gerarMensagens() {
+        const btn = document.querySelector('.btn-gerar');
+        btn.innerText = "⏳ PROCESSANDO...";
+        btn.disabled = true;
+
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(config) })
+        .then(res => res.json())
+        .then(res => {
+            document.getElementById('res1').value = res.v1 || '';
+            document.getElementById('res2').value = res.v2 || '';
+            document.getElementById('res3').value = res.v3 || '';
+            btn.innerText = "✨ GERAR VARIAÇÕES";
+            btn.disabled = false;
+        }).catch(() => {
+            btn.innerText = "ERRO NA CONEXÃO";
+            btn.disabled = false;
+        });
+    }
+
+    function copyText(id, btn) {
+        const area = document.getElementById(id);
+        area.select();
+        document.execCommand('copy');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = "✅ COPIADO";
+        setTimeout(() => { btn.innerHTML = oldText; }, 2000);
+    }
 </script>
 
 </body>
